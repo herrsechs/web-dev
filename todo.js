@@ -9,32 +9,20 @@ var $All = function(sel) {
 var quantity = 0;
 var filter_label = 'All'; // Global var about which elem to filter
 var storage = window.localStorage;
+var todos = JSON.parse(storage.getItem('todoStorage'));
 //var storage = lstorage.getItem('todoStorage');
 // Read storage
-if(storage){
-	quantity = storage.length;
-	for(var key in storage){
-		var val = storage.getItem(key);
+if(todos){
+	quantity = Object.keys(todos).length;
+	for(var key in todos){
+		var val = todos[key];
 		var item_obj = JSON.parse(val);
 		addItemToList(item_obj.id, item_obj.msg, item_obj.completed);
 	}
 	updateCount();
 }else{
-	storage = {
-		getItem: function(itemId){
-			return storage[itemId];
-		},
-		setItem: function(itemId, val){
-			storage[itemId] = val;
-		},
-		removeItem: function(itemId){
-			this.remove(itemId);
-		}
-	};
-
-	lstorage.setItem('todoStorage', storage);
+    todos = {};
 }
-
 
 function updateCount(){
 	if(quantity == 0)
@@ -71,9 +59,11 @@ function addItemToList(itemId, item, completed){
 	var node = document.createElement('div');
 	node.id = itemId.substring(1, itemId.length);
 	node.classList.add('item');
+
 	node.innerHTML = [
-	item ,
+	item,
 	'<button class="del_btn" id="del_btn'+ itemId.charAt(itemId.length-1) +'">X</button>'].join('');
+
 
 	iList.insertBefore(node, iList.childNodes[0]);
 
@@ -89,6 +79,43 @@ function addItemToList(itemId, item, completed){
     $('#' + node.id).addEventListener('click', function(){
 		markComplete('#'+this.id);
     },false);
+
+    $('#' + node.id).addEventListener('dblclick', function(){
+        node.classList.add('editing');
+
+        var edit = document.createElement('input');
+        edit.setAttribute('type', 'input');
+        edit.setAttribute('class', 'edit');
+        edit.setAttribute('value', node.firstChild.data);
+        var finished = false;
+
+        function finish(){
+            if(finished) return;
+            finished = true;
+            iList.removeChild(edit);
+            node.classList.remove('editing');
+        }
+
+        edit.addEventListener('blur', function(){
+            finish();
+        }, false);
+
+        edit.addEventListener('keyup', function(ev){
+            if(ev.keyCode == 27){ // Esc
+                finish();
+            } else if(ev.keyCode == 13) { // Enter
+                node.firstChild.data = this.value;
+                var it = JSON.parse(todos['#'+node.id]);
+        		it.msg = this.value;
+                todos[itemId] = JSON.stringify(it);
+        		storage.setItem('todoStorage', JSON.stringify(todos));
+                finish();
+            }
+        }, false);
+
+        iList.insertBefore(edit, node);
+        edit.focus();
+    },false);
 }
 
 function addTodo(){
@@ -100,7 +127,8 @@ function addTodo(){
 
 	// Storage
 	var item_obj = {'id': '#item'+quantity,'msg':item, 'completed':false};
-	storage.setItem('#item'+quantity, JSON.stringify(item_obj));
+	todos['#item'+quantity] = JSON.stringify(item_obj);
+    storage.setItem('todoStorage', JSON.stringify(todos));
 
 	addItemToList(item_obj.id,item);
 
@@ -112,7 +140,9 @@ function delTodo(itemId){
 	var node = $(itemId);
 	var iList = $('#item_list');
 	iList.removeChild(node);
-	storage.removeItem(itemId);
+    delete todos[itemId];
+	storage.setItem('todoStorage', JSON.stringify(todos));
+
 	if(node.classList.contains('completed'))
 		return;
 	quantity--;
@@ -128,9 +158,10 @@ function markComplete(itemId){
 		node.classList.remove('completed');
 		node.style.textDecoration = 'none';
 
-		var item_obj = JSON.parse(storage.getItem(itemId));
-		item_obj.completed = false;
-		storage.setItem(itemId, JSON.stringify(item_obj));
+        var item = JSON.parse(todos[itemId]);
+		item.completed = false;
+        todos[itemId] = JSON.stringify(item);
+		storage.setItem('todoStorage', JSON.stringify(todos));
 
 		quantity++
 	}
@@ -138,9 +169,10 @@ function markComplete(itemId){
 		node.classList.add('completed');
 		node.style.textDecoration = 'line-through';
 
-		var item_obj = JSON.parse(storage.getItem(itemId));
-		item_obj.completed = true;
-		storage.setItem(itemId, JSON.stringify(item_obj));
+        var item = JSON.parse(todos[itemId]);
+		item.completed = true;
+        todos[itemId] = JSON.stringify(item);
+		storage.setItem('todoStorage', JSON.stringify(todos));
 
 		quantity--;
 	}
@@ -165,4 +197,3 @@ $('#input_box').addEventListener('keyup', function(event){
 	if(event.keyCode != 13) return;
 	addTodo();
 }, false);
-

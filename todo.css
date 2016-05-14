@@ -42,7 +42,11 @@ h1 {
     font-size: 15pt;
 }
 
-.item{
+#item_list .editing{
+    display: none;
+}
+
+.item, .edit{
 	width: 80%;
 	padding-left: 10%;
 	padding-right: 10%;
