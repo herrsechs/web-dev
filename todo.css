@@ -1,0 +1,76 @@
+body {
+	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.4em;
+    background: #f5f5f5;
+    color: #4d4d4d;
+    min-width: 230px;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+h1 {
+	width: 100%;
+    font-size: 100px;
+    font-weight: 100;
+    text-align: center;
+    color: rgba(175, 47, 47, 0.15);
+}
+
+#content {
+	width: inherit;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2),
+ 0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+#input_box {
+	width: 80%;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	padding-left: 10%;
+	padding-right: 10%;
+	outline: none;
+	border: none;
+	font-weight: 300;
+	font-size: 15pt;
+	box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
+}
+
+#input_box::-webkit-input-placeholder{
+	font-style: italic;
+    font-weight: 300;
+    color: #e6e6e6;
+    font-size: 15pt;
+}
+
+.item{
+	width: 80%;
+	padding-left: 10%;
+	padding-right: 10%;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	font-weight: 300;
+	font-size: 15pt;
+	background-color: #ffffff;
+}
+
+.item:hover{
+    background-color: rgba(175, 47, 47, 0.15);
+}
+
+.del_btn {
+    background-color: #ffffff;
+    border: none;
+    height: 20px;
+    width: 20px;
+    float: right;
+}
+
+.del_btn:hover {
+    background-color: rgba(175, 47, 47, 0.3);
+}
+
+.FilterAct, .FilterCpl, .NoFilter{
+    background-color: inherit;
+    border: none;
+    float:right;
+}
