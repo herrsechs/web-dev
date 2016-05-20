@@ -77,7 +77,7 @@ function addItemToList(itemId, item, completed){
 	},false);
 
     $('#' + node.id).addEventListener('click', function(){
-		markComplete('#'+this.id);
+		clickComplete('#'+this.id);
     },false);
 
     $('#' + node.id).addEventListener('dblclick', function(){
@@ -149,34 +149,70 @@ function delTodo(itemId){
 	updateCount();
 }
 
+function clickComplete(itemId){
+	var node = $(itemId);
+	if(!node)
+		return;
+	if(node.classList.contains('completed')){
+		cancelComplete(itemId);
+	}
+	else{
+		markComplete(itemId);
+	}
+}
+
+function cancelComplete(itemId){
+	var node = $(itemId);
+	if(!node)
+		return;
+
+	node.classList.remove('completed');
+	node.style.textDecoration = 'none';
+
+    var item = JSON.parse(todos[itemId]);
+	item.completed = false;
+    todos[itemId] = JSON.stringify(item);
+	storage.setItem('todoStorage', JSON.stringify(todos));
+
+	quantity++;
+	updateCount();
+}
+
 function markComplete(itemId){
 	var node = $(itemId);
 	if(!node)
 		return;
 
-	if(node.classList.contains('completed')){
-		node.classList.remove('completed');
-		node.style.textDecoration = 'none';
+	node.classList.add('completed');
+	node.style.textDecoration = 'line-through';
 
-        var item = JSON.parse(todos[itemId]);
-		item.completed = false;
-        todos[itemId] = JSON.stringify(item);
-		storage.setItem('todoStorage', JSON.stringify(todos));
+    var item = JSON.parse(todos[itemId]);
+	item.completed = true;
+    todos[itemId] = JSON.stringify(item);
+	storage.setItem('todoStorage', JSON.stringify(todos));
 
-		quantity++
-	}
-	else{
-		node.classList.add('completed');
-		node.style.textDecoration = 'line-through';
-
-        var item = JSON.parse(todos[itemId]);
-		item.completed = true;
-        todos[itemId] = JSON.stringify(item);
-		storage.setItem('todoStorage', JSON.stringify(todos));
-
-		quantity--;
-	}
+	quantity--;
 	updateCount();
+}
+
+function markAllComplete(){
+	var iList = $('#item_list');
+	var childs = iList.childNodes;
+	for(var i = 0; i < childs.length; i++){
+		var node = childs[i];
+		if(!node.classList.contains('completed'))
+			markComplete('#'+node.id);
+	}
+}
+
+function cancelAllComplete(){
+	var iList = $('#item_list');
+	var childs = iList.childNodes;
+	for(var i = 0; i < childs.length; i++){
+		var node = childs[i];
+		if(node.classList.contains('completed'))
+			cancelComplete('#'+node.id);
+	}
 }
 
 function filter(){
@@ -196,4 +232,12 @@ function filter(){
 $('#input_box').addEventListener('keyup', function(event){
 	if(event.keyCode != 13) return;
 	addTodo();
+}, false);
+
+$('.toggle-all').addEventListener('click', function(){
+	if(this.checked){
+		markAllComplete();
+	}else{
+		cancelAllComplete();
+	}
 }, false);
