@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="width=device-width" name="viewport">
+	<title></title>
+	<style type="text/css">
+		#square {
+			width: 200px;
+			height: 200px;
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<div id="square">
+	</div>
+	<script type="text/javascript">
+		var s = document.getElementById('square');
+		s.addEventListener('touchstart', changeColor, false);
+		function changeColor(){
+			if(s.style.backgroundColor == 'blue')
+				s.style.backgroundColor = 'green';
+			else
+				s.style.backgroundColor = 'blue';
+		}
+	</script>
+</body>
+</html>
