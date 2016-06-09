@@ -61,6 +61,7 @@ window.onload = function(){
 			update();
 		}, false);
 
+		/*
 		$('.toggle-all').addEventListener('click', function(){
 			if(this.checked){
 				markAllComplete();
@@ -68,7 +69,7 @@ window.onload = function(){
 				cancelAllComplete();
 			}
 		}, false);
-
+		*/
 		update();
 	});
 };
@@ -79,10 +80,11 @@ function updateCount(){
 		$('#count').innerHTML = '';
 	else{
 		$('#count').innerHTML = [
-            quantity + ' items left' +
-        '<button class="FilterAct">Active</button>' +
-        '<button class="FilterCpl">Completed</button>' +
-        '<button class="NoFilter">All</button>'].join('');
+            quantity + ' items left'].join('');
+        $('#filters').innerHTML = [
+        	'<button class="FilterAct">Active</button>' +
+        	'<button class="FilterCpl">Completed</button>' +
+        	'<button class="NoFilter">All</button>'].join('');
 
         $('.FilterAct').addEventListener('click', function(){
 			filter_label = 'Active';
@@ -113,10 +115,11 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 		node.id = itemId;
 	node.classList.add('item');
 
-	node.innerHTML = [
-	item,
+	
+	node.innerHTML = item;
+	/*
 	'<button class="del_btn" id="del_btn'+ itemId.charAt(itemId.length-1) +'">X</button>'].join('');
-
+	*/
 
 	iList.insertBefore(node, iList.childNodes[0]);
 
@@ -124,9 +127,11 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 		markComplete('#'+node.id, idx);
 	}
 
+	/*
 	$('#del_btn'+itemId.charAt(itemId.length-1) ).addEventListener('click', function(){
 		delTodo(idx);
 	},false);
+	*/
 
     $('#' + node.id).addEventListener('click', function(){
 		clickComplete('#'+this.id, idx);
@@ -146,6 +151,7 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
             finished = true;
             iList.removeChild(edit);
             node.classList.remove('editing');
+            update();
         }
 
         edit.addEventListener('blur', function(){
@@ -156,11 +162,15 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
             if(ev.keyCode == 27){ // Esc
                 finish();
             } else if(ev.keyCode == 13) { // Enter
+
+            	data.items[idx].msg = this.value;
+            	/*
                 node.firstChild.data = this.value;
                 var it = JSON.parse(todos['#'+node.id]);
         		it.msg = this.value;
                 todos[itemId] = JSON.stringify(it);
         		storage.setItem('todoStorage', JSON.stringify(todos));
+        		*/
                 finish();
             }
         }, false);
@@ -219,6 +229,7 @@ function clickComplete(itemId, index){
 	else{
 		markComplete(itemId, index);
 	}
+	update();
 }
 
 function cancelComplete(itemId, index){
