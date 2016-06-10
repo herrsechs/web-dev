@@ -22,7 +22,7 @@ h1 {
  0 25px 50px 0 rgba(0, 0, 0, 0.1);
 }
 
-#input_box {
+#input_box, #hint {
 	width: 80%;
 	padding-top: 16px;
 	padding-bottom: 16px;
@@ -33,6 +33,12 @@ h1 {
 	font-weight: 300;
 	font-size: 15pt;
 	box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
+}
+
+#hint {
+    display: none;
+    background-color: rgba(240, 240, 240, 1);
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .toggle-all {
@@ -64,22 +70,21 @@ h1 {
 	font-weight: 300;
 	font-size: 15pt;
 	background-color: #ffffff;
+    overflow: hidden;
 }
 
-.item:hover{
+.complete-bar {
+    width: 80%;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    position: absolute;
+    left: 100%;
+    font-weight: 300;
+    font-size: 15pt;
     background-color: rgba(175, 47, 47, 0.15);
-}
-
-.del_btn {
-    background-color: #ffffff;
-    border: none;
-    height: 20px;
-    width: 20px;
-    float: right;
-}
-
-.del_btn:hover {
-    background-color: rgba(175, 47, 47, 0.3);
+    transition: all 1s;
 }
 
 .FilterAct, .FilterCpl, .NoFilter{
@@ -97,6 +102,7 @@ h1 {
     padding-bottom: 16px;
     font-size: 15pt;
     overflow: hidden;
+    display: none;
 }
 
 #count {

@@ -9,24 +9,6 @@ var $All = function(sel) {
 var quantity = 0; // Active item count 
 var guid = 0;     // Global unique id for each item
 var data;
-//var filter_label = 'All'; // Global var about which elem to filter
-//var storage = window.localStorage;
-//var todos = JSON.parse(storage.getItem('todoStorage'));
-//var storage = lstorage.getItem('todoStorage');
-// Read storage
-/*
-if(todos){
-	quantity = Object.keys(todos).length;
-	for(var key in todos){
-		var val = todos[key];
-		var item_obj = JSON.parse(val);
-		addItemToList(item_obj.id, item_obj.msg, item_obj.completed);
-	}
-	updateCount();
-}else{
-    todos = {};
-}
-*/
 
 function update(){
 	model.flush();
@@ -53,31 +35,54 @@ window.onload = function(){
 		inputBox.addEventListener('change', function(){
 			model.flush();
 		});
-		inputBox.addEventListener('keyup', function(event){
-			if(event.keyCode != 13) return;
-			if(this.value == '') return;
 
+		inputBox.addEventListener('keyup', function(event){
+			if(this.value == ''){
+				$('#hint').style.display = 'none';
+				$('#hint').innerHTML = '';
+				return;
+			} 
+			if(data.history){
+				var found = false;
+				for(var i = 0; i < data.history.length; i++){
+					if(data.history[i] == this.value)
+						break;
+					if(data.history[i].search(this.value) != -1){
+						$('#hint').style.display = 'block';
+						$('#hint').innerHTML = data.history[i];
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					$('#hint').style.display = 'none';
+					$('#hint').innerHTML = '';
+				}
+			}
+
+			if(event.keyCode != 13) return;
 			data.items.push({msg: this.value, completed: false});
+			data.history.push(this.value);
+			$('#hint').style.display = 'none';
 			update();
 		}, false);
 
-		/*
-		$('.toggle-all').addEventListener('click', function(){
-			if(this.checked){
-				markAllComplete();
-			}else{
-				cancelAllComplete();
-			}
+		$('#hint').addEventListener('touchstart', function(){
+			data.items.push({msg: this.innerHTML, completed: false});
+			this.style.display = 'none';
+			update();
 		}, false);
-		*/
+
 		update();
 	});
 };
 
 
 function updateCount(){
-	if(quantity == 0)
+	if(quantity == 0){
 		$('#count').innerHTML = '';
+		$('#filters').style.display = 'none';
+	}
 	else{
 		$('#count').innerHTML = [
             quantity + ' items left'].join('');
@@ -85,6 +90,7 @@ function updateCount(){
         	'<button class="FilterAct">Active</button>' +
         	'<button class="FilterCpl">Completed</button>' +
         	'<button class="NoFilter">All</button>'].join('');
+        $('#filters').style.display = 'block';
 
         $('.FilterAct').addEventListener('click', function(){
 			filter_label = 'Active';
@@ -117,9 +123,7 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 
 	
 	node.innerHTML = item;
-	/*
-	'<button class="del_btn" id="del_btn'+ itemId.charAt(itemId.length-1) +'">X</button>'].join('');
-	*/
+	// '<div class="complete-bar"></div>'].join('');
 
 	iList.insertBefore(node, iList.childNodes[0]);
 
@@ -127,18 +131,19 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 		markComplete('#'+node.id, idx);
 	}
 
-	/*
-	$('#del_btn'+itemId.charAt(itemId.length-1) ).addEventListener('click', function(){
+	// Attach function to event
+	var hammer = new Hammer($('#' + itemId));
+
+	hammer.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 50}));
+	hammer.on('panleft', function(ev){
+		clickComplete('#' + node.id, idx);
+	});
+	hammer.on('panright', function(ev){
 		delTodo(idx);
-	},false);
-	*/
+	});
 
-    $('#' + node.id).addEventListener('click', function(){
-		clickComplete('#'+this.id, idx);
-    },false);
-
-    $('#' + node.id).addEventListener('dblclick', function(){
-        node.classList.add('editing');
+    hammer.on('press', function(ev){
+    	node.classList.add('editing');
 
         var edit = document.createElement('input');
         edit.setAttribute('type', 'input');
@@ -162,61 +167,21 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
             if(ev.keyCode == 27){ // Esc
                 finish();
             } else if(ev.keyCode == 13) { // Enter
-
             	data.items[idx].msg = this.value;
-            	/*
-                node.firstChild.data = this.value;
-                var it = JSON.parse(todos['#'+node.id]);
-        		it.msg = this.value;
-                todos[itemId] = JSON.stringify(it);
-        		storage.setItem('todoStorage', JSON.stringify(todos));
-        		*/
+            	data.history.push(this.value);
                 finish();
             }
         }, false);
 
         iList.insertBefore(edit, node);
         edit.focus();
-    },false);
+    });
+	
 }
-
-
-/*
-function addTodo(){
-	var input = $('#input_box');
-	var item = input.value;
-
-	if(item == '')
-		return;
-
-	// Storage
-	var item_obj = {'id': '#item'+guid,'msg':item, 'completed':false};
-	todos['#item'+quantity] = JSON.stringify(item_obj);
-    storage.setItem('todoStorage', JSON.stringify(todos));
-
-	addItemToList(item_obj.id,item);
-
-	quantity++;
-	guid++;
-	updateCount();
-}
-*/
 
 function delTodo(index){
 	data.items.splice(index, 1);
 	update();
-	/*
-	var node = $(itemId);
-	var iList = $('#item_list');
-	iList.removeChild(node);
-    delete todos[itemId];
-	storage.setItem('todoStorage', JSON.stringify(todos));
-
-	if(node.classList.contains('completed'))
-		return;
-	quantity--;
-	updateCount();
-	*/
 }
 
 function clickComplete(itemId, index){
@@ -241,16 +206,6 @@ function cancelComplete(itemId, index){
 	node.style.textDecoration = 'none';
 
 	data.items[index].completed = false;
-	/*
-    var item = JSON.parse(todos[itemId]);
-	item.completed = false;
-    todos[itemId] = JSON.stringify(item);
-	storage.setItem('todoStorage', JSON.stringify(todos));
-
-	quantity++;
-	updateCount();
-	*/
-
 
 }
 
@@ -263,15 +218,6 @@ function markComplete(itemId, index){
 	node.style.textDecoration = 'line-through';
 
 	data.items[index].completed = true;
-	/*
-    var item = JSON.parse(todos[itemId]);
-	item.completed = true;
-    todos[itemId] = JSON.stringify(item);
-	storage.setItem('todoStorage', JSON.stringify(todos));
-
-	quantity--;
-	updateCount();
-	*/
 }
 
 function markAllComplete(){
@@ -307,18 +253,3 @@ function filter(){
 		item.style.display = display;
 	}
 }
-
-/*
-$('#input_box').addEventListener('keyup', function(event){
-	if(event.keyCode != 13) return;
-	addTodo();
-}, false);
-
-$('.toggle-all').addEventListener('click', function(){
-	if(this.checked){
-		markAllComplete();
-	}else{
-		cancelAllComplete();
-	}
-}, false);
-*/

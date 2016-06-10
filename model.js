@@ -1,6 +1,7 @@
 window.model = {
 	data: {
 		items: [], 
+		history: [],
 		msg: '',
 		filter: 'All',
 	},
