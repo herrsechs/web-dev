@@ -61,6 +61,10 @@ h1 {
     display: none;
 }
 
+#item_list {
+    background-color: #eeeeee;
+}
+
 .item, .edit{
 	width: 80%;
 	padding-left: 10%;
@@ -71,6 +75,9 @@ h1 {
 	font-size: 15pt;
 	background-color: #ffffff;
     overflow: hidden;
+    position: relative;
+    transition: .1s;
+    
 }
 
 .complete-bar {
@@ -85,6 +92,7 @@ h1 {
     font-size: 15pt;
     background-color: rgba(175, 47, 47, 0.15);
     transition: all 1s;
+
 }
 
 .FilterAct, .FilterCpl, .NoFilter{
@@ -96,6 +104,7 @@ h1 {
 }
 
 #filters {
+    background-color: #eeeeee;
     padding-left: 10%;
     padding-right: 10%;
     padding-top: 16px;
@@ -103,6 +112,12 @@ h1 {
     font-size: 15pt;
     overflow: hidden;
     display: none;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.1);
+    transition: all 1s;
 }
 
 #count {

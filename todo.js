@@ -122,8 +122,8 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 	node.classList.add('item');
 
 	
-	node.innerHTML = item;
-	// '<div class="complete-bar"></div>'].join('');
+	node.innerHTML = [item,
+	'<div class="complete-bar" id="cbar'+ itemId[itemId.length-1]+'"></div>'].join('');
 
 	iList.insertBefore(node, iList.childNodes[0]);
 
@@ -135,12 +135,42 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 	var hammer = new Hammer($('#' + itemId));
 
 	hammer.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 50}));
-	hammer.on('panleft', function(ev){
-		clickComplete('#' + node.id, idx);
+	hammer.on('pan', function(ev){
+		
+		pretrans = 0;
+		if(node.style.transform != ''){
+			var t = node.style.transform;
+			var s = t.split(',')[0].split('(')[1]
+			pretrans = parseInt(s.substr(0, s.length-2));
+		}
+		var trans = pretrans + ev.deltaX/50;
+		if(trans > 100) {
+			delTodo(idx);
+		}else if(trans < -100){
+			clickComplete('#' + node.id, idx);
+			trans = 0;
+		}
+		console.log('trans: ' + trans);
+		node.style.transform = 'translate3d(' + trans + 'px, 0, 0)';
 	});
-	hammer.on('panright', function(ev){
-		delTodo(idx);
-	});
+
+	// hammer.on('panleft', function(ev){
+	// 	node.style.backgroundColor = 'rgba(175, 47, 47, 0.15)';
+	// 	console.log('pan: ' + ev.deltaX);
+	// 	//clickComplete('#' + node.id, idx);
+	// });
+	// hammer.on('panright', function(ev){
+	// 	console.log('pan: ' + ev.deltaX);
+	// 	pretrans = 0;
+	// 	if(node.style.transform != ''){
+	// 		var t = node.style.transform;
+	// 		var s = t.split(',')[0].split('(')[1]
+	// 		pretrans = parseInt(s.substr(0, s.length-2));
+	// 	}
+	// 	var trans = pretrans + ev.deltaX/100;
+	// 	node.style.transform = 'translate3d(' + trans + 'px, 0, 0)'; 
+	// 	//delTodo(idx);
+	// });
 
     hammer.on('press', function(ev){
     	node.classList.add('editing');
@@ -184,6 +214,7 @@ function delTodo(index){
 	update();
 }
 
+
 function clickComplete(itemId, index){
 	var node = $(itemId);
 	if(!node)
@@ -203,7 +234,7 @@ function cancelComplete(itemId, index){
 		return;
 
 	node.classList.remove('completed');
-	node.style.textDecoration = 'none';
+	//node.style.textDecoration = 'none';
 
 	data.items[index].completed = false;
 
@@ -215,7 +246,7 @@ function markComplete(itemId, index){
 		return;
 
 	node.classList.add('completed');
-	node.style.textDecoration = 'line-through';
+	//node.style.textDecoration = 'line-through';
 
 	data.items[index].completed = true;
 }
