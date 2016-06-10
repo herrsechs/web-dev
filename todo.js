@@ -8,9 +8,10 @@ var $All = function(sel) {
 
 var quantity = 0; // Active item count 
 var guid = 0;     // Global unique id for each item
-var data;
+var data;		  // Store all the items' value and status
 
-function update(){
+// When data is changed, redraw the page
+function update(){ 
 	model.flush();
 	data = model.data;
 	if(!data.items)
@@ -27,7 +28,8 @@ function update(){
 	updateCount();
 }
 
-window.onload = function(){
+// Initialize the page
+window.onload = function(){ 
 	model.init(function(){
 		data = model.data;
 
@@ -77,8 +79,8 @@ window.onload = function(){
 	});
 };
 
-
-function updateCount(){
+// Update number of items and display filters
+function updateCount(){ 
 	if(quantity == 0){
 		$('#count').innerHTML = '';
 		$('#filters').style.display = 'none';
@@ -109,7 +111,11 @@ function updateCount(){
     }
 }
 
-function addItemToList(itemId, item, completed, idx){ // idx is the index of item in data.items
+// itemId: dom id to be added
+// item: innerHTML of this dom
+// completed: bool, whether 
+// idx: the index of item in data.items
+function addItemToList(itemId, item, completed, idx){
 	var iList = $('#item_list');
 	var cpl = completed || false;
 
@@ -209,11 +215,11 @@ function addItemToList(itemId, item, completed, idx){ // idx is the index of ite
 	
 }
 
+// Delete an item in data.items
 function delTodo(index){
 	data.items.splice(index, 1);
 	update();
 }
-
 
 function clickComplete(itemId, index){
 	var node = $(itemId);
@@ -271,6 +277,7 @@ function cancelAllComplete(){
 	}
 }
 
+// Filter all the items according to label
 function filter(){
 	var items = $All('#item_list .item');
 	for(var i = 0; i < items.length; i++){
