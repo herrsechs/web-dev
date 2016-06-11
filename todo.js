@@ -156,7 +156,7 @@ function addItemToList(itemId, item, completed, idx){
 			clickComplete('#' + node.id, idx);
 			trans = 0;
 		}
-		console.log('trans: ' + trans);
+		// console.log('trans: ' + trans);
 		node.style.transform = 'translate3d(' + trans + 'px, 0, 0)';
 	});
 
